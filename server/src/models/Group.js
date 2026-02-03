@@ -201,9 +201,7 @@ const groupSchema = new mongoose.Schema({
 });
 
 // 索引
-groupSchema.index({ owner: 1 });
 groupSchema.index({ 'members.address': 1 });
-groupSchema.index({ inviteCode: 1 });
 groupSchema.index({ createdAt: -1 });
 
 // 虚拟字段：成员数量

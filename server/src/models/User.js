@@ -133,7 +133,6 @@ const userSchema = new mongoose.Schema({
 });
 
 // 索引
-userSchema.index({ address: 1 });
 userSchema.index({ online: 1 });
 userSchema.index({ createdAt: -1 });
 

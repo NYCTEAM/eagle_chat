@@ -172,9 +172,6 @@ const botSchema = new mongoose.Schema({
 });
 
 // 索引
-botSchema.index({ username: 1 });
-botSchema.index({ token: 1 });
-botSchema.index({ creator: 1 });
 botSchema.index({ isActive: 1 });
 
 // 方法：生成 API Token
