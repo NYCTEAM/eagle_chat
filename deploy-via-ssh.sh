@@ -14,8 +14,8 @@ echo ""
 echo "连接服务器: $SERVER"
 echo ""
 
-# 通过SSH执行远程命令
-ssh $SERVER << 'EOF'
+# 通过SSH执行远程命令（自动接受主机密钥）
+ssh -o StrictHostKeyChecking=no $SERVER << 'EOF'
 set -e
 
 # 配置

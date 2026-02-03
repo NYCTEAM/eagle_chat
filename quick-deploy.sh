@@ -12,8 +12,8 @@ DIR="/opt/eagle_chat"
 echo "🦅 Eagle Chat 快速部署"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# 一键执行所有命令
-ssh $SERVER << EOF
+# 一键执行所有命令（自动接受主机密钥）
+ssh -o StrictHostKeyChecking=no $SERVER << EOF
 set -e
 
 # 更新代码

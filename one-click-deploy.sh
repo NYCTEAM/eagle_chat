@@ -46,7 +46,7 @@ echo ""
 echo -e "${YELLOW}[步骤 2/6]${NC} 连接到服务器并开始部署..."
 echo ""
 
-ssh $SERVER_USER@$SERVER_IP << 'ENDSSH'
+ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << 'ENDSSH'
 set -e
 
 # 颜色定义
