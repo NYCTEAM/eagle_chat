@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Eagle Chat",
+    "tagline": "Децентрализованный чат на основе адреса кошелька"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "success": "Успех",
+    "error": "Ошибка",
+    "logout": "Выйти"
+  },
+  "login": {
+    "title": "Добро пожаловать в Eagle Chat",
+    "connectWallet": "Войти через MetaMask"
+  }
+}

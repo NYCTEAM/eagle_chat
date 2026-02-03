@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Eagle Chat",
+    "tagline": "دردشة لامركزية تعتمد على عنوان المحفظة"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "success": "نجح",
+    "error": "خطأ",
+    "logout": "تسجيل الخروج"
+  },
+  "login": {
+    "title": "مرحبا بك في Eagle Chat",
+    "connectWallet": "تسجيل الدخول باستخدام MetaMask"
+  }
+}

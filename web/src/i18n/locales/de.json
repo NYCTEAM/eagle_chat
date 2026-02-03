@@ -1,0 +1,16 @@
+{
+  "app": {
+    "name": "Eagle Chat",
+    "tagline": "Dezentraler Chat basierend auf Wallet-Adresse"
+  },
+  "common": {
+    "loading": "Laden...",
+    "success": "Erfolg",
+    "error": "Fehler",
+    "logout": "Abmelden"
+  },
+  "login": {
+    "title": "Willkommen bei Eagle Chat",
+    "connectWallet": "Mit MetaMask anmelden"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "app": {
+    "name": "Eagle Chat",
+    "tagline": "Chat Descentralizado Basado en Dirección de Billetera",
+    "version": "v1.0",
+    "poweredBy": "Impulsado por Web3"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "sending": "Enviando...",
+    "connecting": "Conectando...",
+    "success": "Éxito",
+    "error": "Error",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "send": "Enviar",
+    "logout": "Cerrar sesión",
+    "online": "En línea",
+    "offline": "Desconectado"
+  },
+  "login": {
+    "title": "Bienvenido a Eagle Chat",
+    "connectWallet": "Iniciar sesión con MetaMask",
+    "noMetaMask": "¿No tienes MetaMask?",
+    "installMetaMask": "Haz clic para instalar"
+  },
+  "chat": {
+    "tabs": {
+      "chats": "Chats",
+      "groups": "Grupos",
+      "meetings": "Reuniones"
+    },
+    "input": {
+      "placeholder": "Escribe un mensaje..."
+    }
+  },
+  "errors": {
+    "network": "Error de red",
+    "loginFailed": "Error al iniciar sesión",
+    "walletNotInstalled": "Por favor instala MetaMask primero"
+  },
+  "success": {
+    "loginSuccess": "¡Inicio de sesión exitoso!",
+    "messageSent": "Mensaje enviado"
+  }
+}
