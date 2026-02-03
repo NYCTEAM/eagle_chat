@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
+const { auth } = require('../middleware/auth');
 const { generateQRCode } = require('../utils/qrcode');
 
 // 生成用户二维码（用于添加好友）
