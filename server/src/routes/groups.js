@@ -17,8 +17,19 @@ router.post('/', auth, async (req, res) => {
     const group = new Group({
       name,
       description: description || '',
-      creator: req.user.address,
-      members: [req.user.address, ...(members || [])],
+      owner: req.user.address, // Set owner field
+      members: [
+        { 
+          address: req.user.address, 
+          role: 'owner',
+          joinedAt: new Date()
+        }, 
+        ...(members || []).map(m => ({ 
+          address: m, 
+          role: 'member', 
+          joinedAt: new Date()
+        }))
+      ],
       admins: [req.user.address]
     });
 
@@ -51,7 +62,7 @@ router.post('/', auth, async (req, res) => {
 router.get('/', auth, async (req, res) => {
   try {
     const groups = await Group.find({
-      members: req.user.address,
+      'members.address': req.user.address,
       isActive: true
     }).sort({ updatedAt: -1 });
 
@@ -71,13 +82,16 @@ router.get('/:groupId', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (!group.members.includes(req.user.address)) {
+    // Check membership
+    const isMember = group.members.some(m => m.address === req.user.address);
+    if (!isMember) {
       return res.status(403).json({ success: false, message: 'Not a member of this group' });
     }
 
     // 获取成员信息
+    const memberAddresses = group.members.map(m => m.address);
     const members = await User.find({
-      address: { $in: group.members }
+      address: { $in: memberAddresses }
     }).select('address nickname avatar online');
 
     res.json({
@@ -135,8 +149,17 @@ router.post('/:groupId/members', auth, async (req, res) => {
     }
 
     // 添加新成员
-    const newMembers = members.filter(m => !group.members.includes(m));
-    group.members.push(...newMembers);
+    const currentMemberAddresses = group.members.map(m => m.address);
+    const newMembers = members.filter(m => !currentMemberAddresses.includes(m));
+    
+    for (const address of newMembers) {
+      group.members.push({
+        address,
+        role: 'member',
+        joinedAt: new Date()
+      });
+    }
+    
     await group.save();
 
     res.json({ success: true, message: 'Members added', group });
@@ -160,7 +183,7 @@ router.delete('/:groupId/members/:memberAddress', auth, async (req, res) => {
       return res.status(403).json({ success: false, message: 'Only admins can remove members' });
     }
 
-    group.members = group.members.filter(m => m !== memberAddress);
+    group.members = group.members.filter(m => m.address !== memberAddress);
     group.admins = group.admins.filter(a => a !== memberAddress);
     await group.save();
 
@@ -180,19 +203,20 @@ router.post('/:groupId/leave', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (!group.members.includes(req.user.address)) {
+    const isMember = group.members.some(m => m.address === req.user.address);
+    if (!isMember) {
       return res.status(400).json({ success: false, message: 'Not a member of this group' });
     }
 
     // 如果是创建者，不能离开
-    if (group.creator === req.user.address) {
+    if (group.owner === req.user.address) {
       return res.status(400).json({ 
         success: false, 
-        message: 'Creator cannot leave. Transfer ownership first.' 
+        message: 'Owner cannot leave. Transfer ownership first.' 
       });
     }
 
-    group.members = group.members.filter(m => m !== req.user.address);
+    group.members = group.members.filter(m => m.address !== req.user.address);
     group.admins = group.admins.filter(a => a !== req.user.address);
     await group.save();
 
@@ -212,8 +236,8 @@ router.delete('/:groupId', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (group.creator !== req.user.address) {
-      return res.status(403).json({ success: false, message: 'Only creator can delete group' });
+    if (group.owner !== req.user.address) {
+      return res.status(403).json({ success: false, message: 'Only owner can delete group' });
     }
 
     group.isActive = false;
@@ -236,11 +260,12 @@ router.post('/:groupId/admins', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (group.creator !== req.user.address) {
-      return res.status(403).json({ success: false, message: 'Only creator can set admins' });
+    if (group.owner !== req.user.address) {
+      return res.status(403).json({ success: false, message: 'Only owner can set admins' });
     }
 
-    if (!group.members.includes(address)) {
+    const isMember = group.members.some(m => m.address === address);
+    if (!isMember) {
       return res.status(400).json({ success: false, message: 'User is not a member' });
     }
 
@@ -266,8 +291,8 @@ router.delete('/:groupId/admins/:address', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (group.creator !== req.user.address) {
-      return res.status(403).json({ success: false, message: 'Only creator can remove admins' });
+    if (group.owner !== req.user.address) {
+      return res.status(403).json({ success: false, message: 'Only owner can remove admins' });
     }
 
     group.admins = group.admins.filter(a => a !== address);
@@ -290,7 +315,7 @@ router.post('/:groupId/mute', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (!group.admins.includes(req.user.address) && group.creator !== req.user.address) {
+    if (!group.admins.includes(req.user.address) && group.owner !== req.user.address) {
       return res.status(403).json({ success: false, message: 'Only admins can mute users' });
     }
 
@@ -326,7 +351,7 @@ router.delete('/:groupId/mute/:address', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (!group.admins.includes(req.user.address) && group.creator !== req.user.address) {
+    if (!group.admins.includes(req.user.address) && group.owner !== req.user.address) {
       return res.status(403).json({ success: false, message: 'Only admins can unmute users' });
     }
 
@@ -352,7 +377,7 @@ router.put('/:groupId/announcement', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (!group.admins.includes(req.user.address) && group.creator !== req.user.address) {
+    if (!group.admins.includes(req.user.address) && group.owner !== req.user.address) {
       return res.status(403).json({ success: false, message: 'Only admins can update announcement' });
     }
 
@@ -378,15 +403,24 @@ router.post('/:groupId/transfer', auth, async (req, res) => {
       return res.status(404).json({ success: false, message: 'Group not found' });
     }
 
-    if (group.creator !== req.user.address) {
-      return res.status(403).json({ success: false, message: 'Only creator can transfer ownership' });
+    if (group.owner !== req.user.address) {
+      return res.status(403).json({ success: false, message: 'Only owner can transfer ownership' });
     }
 
-    if (!group.members.includes(newCreator)) {
-      return res.status(400).json({ success: false, message: 'New creator must be a member' });
+    const isNewCreatorMember = group.members.some(m => m.address === newCreator);
+    if (!isNewCreatorMember) {
+      return res.status(400).json({ success: false, message: 'New owner must be a member' });
     }
 
-    group.creator = newCreator;
+    group.owner = newCreator;
+    
+    // Update roles
+    const oldOwnerMember = group.members.find(m => m.address === req.user.address);
+    if (oldOwnerMember) oldOwnerMember.role = 'admin';
+    
+    const newOwnerMember = group.members.find(m => m.address === newCreator);
+    if (newOwnerMember) newOwnerMember.role = 'owner';
+
     if (!group.admins.includes(newCreator)) {
       group.admins.push(newCreator);
     }
@@ -412,7 +446,8 @@ router.post('/join/:groupId', auth, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Group is not active' });
     }
 
-    if (group.members.includes(req.user.address)) {
+    const isMember = group.members.some(m => m.address === req.user.address);
+    if (isMember) {
       return res.status(400).json({ success: false, message: 'Already a member' });
     }
 
@@ -423,7 +458,11 @@ router.post('/join/:groupId', auth, async (req, res) => {
     }
 
     // 直接加入
-    group.members.push(req.user.address);
+    group.members.push({
+      address: req.user.address,
+      role: 'member',
+      joinedAt: new Date()
+    });
     await group.save();
 
     res.json({ success: true, message: 'Joined group', group });

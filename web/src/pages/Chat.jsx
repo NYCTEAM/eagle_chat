@@ -58,8 +58,13 @@ export default function Chat() {
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between mb-3">
             <div 
-              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => setShowProfileSettings(true)}
+              className="flex items-center space-x-3 cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-all"
+              onClick={() => {
+                console.log('Opening profile settings');
+                setShowProfileSettings(true);
+              }}
+              role="button"
+              tabIndex={0}
             >
               <div className="relative">
                 {user?.avatar ? (
