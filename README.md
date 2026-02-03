@@ -17,20 +17,49 @@ Eagle Chat是一个专为加密钱包设计的去中心化聊天平台，支持�
 
 ## 🚀 快速开始
 
-### 方法1：一键部署（推荐）
+### 方法1：一键SSH部署（最简单）⭐
+
+从本地电脑直接部署到服务器，只需3步：
 
 ```bash
-# 1. 下载部署脚本
-wget https://raw.githubusercontent.com/your-repo/eagle-chat/main/deploy-eagle-chat.sh
+# 1. 克隆项目到本地
+git clone https://github.com/NYCTEAM/eagle_chat.git
+cd eagle_chat
 
 # 2. 赋予执行权限
-chmod +x deploy-eagle-chat.sh
+chmod +x one-click-deploy.sh
 
-# 3. 运行部署（需要root权限）
-sudo ./deploy-eagle-chat.sh
+# 3. 运行一键部署（自动SSH登录、拉取代码、部署）
+./one-click-deploy.sh
 ```
 
-### 方法2：手动部署
+**Windows用户**：双击运行 `one-click-deploy.bat`
+
+**高级用户**（已配置SSH密钥）：
+```bash
+chmod +x quick-deploy.sh
+./quick-deploy.sh
+```
+
+详细说明请查看：[ONE_CLICK_DEPLOY.md](ONE_CLICK_DEPLOY.md)
+
+### 方法2：服务器上直接部署
+
+```bash
+# 1. SSH登录服务器
+ssh root@72.80.150.12
+
+# 2. 克隆项目
+cd /opt
+git clone https://github.com/NYCTEAM/eagle_chat.git
+cd eagle_chat
+
+# 3. 运行部署脚本
+chmod +x deploy-to-large-disk.sh
+./deploy-to-large-disk.sh
+```
+
+### 方法3：手动部署
 
 #### 前置要求
 
@@ -372,10 +401,15 @@ chmod -R 755 server/uploads/
 
 ## 📚 文档
 
+- [一键部署指南](ONE_CLICK_DEPLOY.md) ⭐ 推荐
+- [大硬盘部署指南](DEPLOY_LARGE_DISK.md)
+- [快速部署指南](QUICK_DEPLOY.md)
+- [最终部署指南](FINAL_DEPLOY_GUIDE.md)
+- [Web部署说明](WEB_DEPLOYMENT.md)
+- [多语言支持指南](web/I18N_GUIDE.md)
+- [多语言总结](I18N_SUMMARY.md)
 - [API文档](docs/API.md)
 - [Socket.IO文档](docs/SOCKET.md)
-- [部署文档](docs/DEPLOYMENT.md)
-- [开发指南](docs/DEVELOPMENT.md)
 
 ## 🤝 贡献
 
