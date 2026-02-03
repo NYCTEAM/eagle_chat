@@ -24,7 +24,7 @@ const userRoutes = require('./routes/users');
 const botRoutes = require('./routes/bots');
 
 // Import middleware
-const errorHandler = require('./middleware/errorHandler');
+const { errorHandler } = require('./middleware/errorHandler');
 
 // Initialize Express app
 const app = express();
