@@ -7,6 +7,7 @@ import socketService from '../services/socket'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import FriendList from '../components/FriendList'
 import ChatWindow from '../components/ChatWindow'
+import ProfileSettings from '../components/ProfileSettings'
 
 export default function Chat() {
   const { t } = useTranslation()
@@ -14,6 +15,7 @@ export default function Chat() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('chats')
   const [selectedFriend, setSelectedFriend] = useState(null)
+  const [showProfileSettings, setShowProfileSettings] = useState(false)
 
   useEffect(() => {
     // 连接Socket.IO
@@ -39,15 +41,29 @@ export default function Chat() {
         {/* 用户信息 */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
-                {user?.nickname?.[0] || user?.address?.slice(0, 2).toUpperCase()}
+            <div 
+              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => setShowProfileSettings(true)}
+            >
+              <div className="relative">
+                {user?.avatar ? (
+                  <img 
+                    src={user.avatar} 
+                    alt={user.nickname} 
+                    className="w-12 h-12 rounded-full object-cover border border-gray-200"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                    {user?.nickname?.[0] || user?.address?.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900">
+                <h3 className="font-semibold text-gray-900 truncate max-w-[120px]">
                   {user?.nickname || t('user.nickname')}
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 font-mono">
                   {user?.address?.slice(0, 6)}...{user?.address?.slice(-4)}
                 </p>
               </div>
@@ -107,11 +123,7 @@ export default function Chat() {
             <FriendList onSelectFriend={setSelectedFriend} />
           )}
           {activeTab === 'groups' && (
-            <div className="p-4 text-center text-gray-500">
-              <Users className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-              <p>{t('chat.empty.groups')}</p>
-              <p className="text-sm mt-1">{t('chat.empty.groupsHint')}</p>
-            </div>
+            <GroupList onSelectGroup={setSelectedGroup} />
           )}
           {activeTab === 'meetings' && (
             <div className="p-4 text-center text-gray-500">
@@ -124,8 +136,12 @@ export default function Chat() {
       </div>
 
       {/* 主聊天区域 */}
-      {selectedFriend ? (
-        <ChatWindow friend={selectedFriend} />
+      {chatTarget ? (
+        <ChatWindow 
+          target={chatTarget} 
+          type={getChatType()} 
+          key={chatTarget.id || chatTarget.address} // Force re-render when target changes
+        />
       ) : (
         <div className="flex-1 flex flex-col">
           {/* 欢迎界面 */}
