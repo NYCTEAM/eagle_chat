@@ -17,9 +17,9 @@ export default function FriendList({ onSelectFriend }) {
   const loadFriends = async () => {
     try {
       setLoading(true);
-      const response = await api.get('/friends');
-      if (response.data.success) {
-        setFriends(response.data.friends);
+      const data = await api.getFriends();
+      if (data.success) {
+        setFriends(data.friends);
       }
     } catch (error) {
       console.error('Load friends error:', error);
@@ -130,9 +130,9 @@ function AddFriendModal({ onClose, onSuccess }) {
 
     try {
       setLoading(true);
-      const response = await api.get(`/friends/search?query=${searchQuery}`);
-      if (response.data.success) {
-        setSearchResults(response.data.users);
+      const data = await api.searchUsers(searchQuery);
+      if (data.success) {
+        setSearchResults(data.users);
       }
     } catch (error) {
       console.error('Search users error:', error);
@@ -143,8 +143,8 @@ function AddFriendModal({ onClose, onSuccess }) {
 
   const handleAddFriend = async (address) => {
     try {
-      const response = await api.post('/friends/request', { friendAddress: address });
-      if (response.data.success) {
+      const data = await api.sendFriendRequest(address);
+      if (data.success) {
         alert(t('chat.friends.requestSent'));
         onSuccess();
         onClose();

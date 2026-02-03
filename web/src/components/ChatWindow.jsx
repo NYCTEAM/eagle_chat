@@ -91,14 +91,14 @@ export default function ChatWindow({ friend }) {
     if (!newMessage.trim()) return;
 
     try {
-      const response = await api.post('/messages', {
+      const data = await api.sendMessage({
         to: friend.address,
         type: 'text',
         content: newMessage
       });
 
-      if (response.data.success) {
-        setMessages(prev => [...prev, response.data.message]);
+      if (data.success) {
+        setMessages(prev => [...prev, data.data]);
         setNewMessage('');
         
         // 通过 Socket.IO 发送
@@ -127,24 +127,32 @@ export default function ChatWindow({ friend }) {
 
   const handleSendVoice = async (audioBlob, duration) => {
     try {
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'voice.webm');
-      formData.append('to', friend.address);
-      formData.append('type', 'voice');
-      formData.append('duration', duration);
-
-      const response = await api.post('/messages/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      if (response.data.success) {
-        setMessages(prev => [...prev, response.data.message]);
-        socketService.emit('send_message', {
+      // 1. 上传音频文件
+      const uploadData = await api.uploadFile(audioBlob, 'voice.webm');
+      
+      if (uploadData.success) {
+        const fileUrl = uploadData.file.url;
+        
+        // 2. 发送语音消息
+        const messageData = await api.sendMessage({
           to: friend.address,
           type: 'voice',
-          content: response.data.message.content,
-          duration
+          content: 'Voice Message',
+          fileUrl: fileUrl,
+          fileMimeType: 'audio/webm',
+          duration: duration
         });
+
+        if (messageData.success) {
+          setMessages(prev => [...prev, messageData.data]);
+          
+          socketService.emit('send_message', {
+            to: friend.address,
+            type: 'voice',
+            content: fileUrl, // Socket simple relay uses content
+            duration
+          });
+        }
       }
     } catch (error) {
       console.error('Send voice error:', error);
@@ -154,29 +162,41 @@ export default function ChatWindow({ friend }) {
 
   const handleUploadFiles = async (files) => {
     try {
-      const formData = new FormData();
-      files.forEach(file => {
-        formData.append('files', file);
-      });
-      formData.append('to', friend.address);
-
-      const response = await api.post('/messages/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-
-      if (response.data.success) {
-        response.data.messages.forEach(msg => {
-          setMessages(prev => [...prev, msg]);
-          socketService.emit('send_message', {
+      for (const file of files) {
+        // 1. 上传文件
+        const uploadData = await api.uploadFile(file);
+        
+        if (uploadData.success) {
+          const fileInfo = uploadData.file;
+          const type = fileInfo.mimeType.startsWith('image/') ? 'image' : 
+                      fileInfo.mimeType.startsWith('video/') ? 'video' : 'file';
+          
+          // 2. 发送消息
+          const messageData = await api.sendMessage({
             to: friend.address,
-            type: msg.type,
-            content: msg.content
+            type: type,
+            content: fileInfo.name,
+            fileUrl: fileInfo.url,
+            fileName: fileInfo.name,
+            fileSize: fileInfo.size,
+            fileMimeType: fileInfo.mimeType
           });
-        });
+
+          if (messageData.success) {
+            setMessages(prev => [...prev, messageData.data]);
+            
+            socketService.emit('send_message', {
+              to: friend.address,
+              type: type,
+              content: fileInfo.url,
+              fileName: fileInfo.name
+            });
+          }
+        }
       }
     } catch (error) {
       console.error('Upload files error:', error);
-      throw error;
+      alert(t('chat.file.uploadError'));
     }
   };
 

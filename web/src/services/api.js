@@ -87,9 +87,13 @@ class ApiService {
     return this.client.delete(`/messages/${messageId}`)
   }
 
-  async uploadFile(file) {
+  async uploadFile(file, filename) {
     const formData = new FormData()
-    formData.append('file', file)
+    if (filename) {
+      formData.append('file', file, filename)
+    } else {
+      formData.append('file', file)
+    }
     return this.client.post('/messages/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
@@ -101,7 +105,7 @@ class ApiService {
 
   // 用户相关
   async searchUsers(query) {
-    return this.client.get('/users/search', { params: { q: query } })
+    return this.client.get('/friends/search', { params: { query } })
   }
 
   async getUserByAddress(address) {
@@ -114,15 +118,15 @@ class ApiService {
   }
 
   async sendFriendRequest(address, message) {
-    return this.client.post('/friends/request', { address, message })
+    return this.client.post('/friends/request', { friendAddress: address, message })
   }
 
   async acceptFriendRequest(requestId) {
-    return this.client.put(`/friends/request/${requestId}/accept`)
+    return this.client.post(`/friends/accept/${requestId}`)
   }
 
   async declineFriendRequest(requestId) {
-    return this.client.put(`/friends/request/${requestId}/decline`)
+    return this.client.post(`/friends/reject/${requestId}`)
   }
 
   async removeFriend(address) {
