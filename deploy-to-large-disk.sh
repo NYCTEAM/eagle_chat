@@ -72,11 +72,20 @@ chmod 755 "$LOG_DIR"
 
 echo -e "${GREEN}[4/12]${NC} 安装MongoDB..."
 if ! command -v mongod &> /dev/null; then
+    # 检测Ubuntu版本
+    UBUNTU_VERSION=$(lsb_release -cs)
+    
+    # Ubuntu 24.04 (noble) 使用 jammy 的仓库
+    if [ "$UBUNTU_VERSION" = "noble" ]; then
+        echo "检测到Ubuntu 24.04，使用Ubuntu 22.04的MongoDB仓库..."
+        UBUNTU_VERSION="jammy"
+    fi
+    
     # 导入MongoDB公钥
     curl -fsSL https://www.mongodb.org/static/pgp/server-6.0.asc | gpg --dearmor -o /usr/share/keyrings/mongodb-archive-keyring.gpg
     
     # 添加MongoDB源
-    echo "deb [signed-by=/usr/share/keyrings/mongodb-archive-keyring.gpg] https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+    echo "deb [signed-by=/usr/share/keyrings/mongodb-archive-keyring.gpg] https://repo.mongodb.org/apt/ubuntu $UBUNTU_VERSION/mongodb-org/6.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-6.0.list
     
     # 安装MongoDB
     apt-get update
