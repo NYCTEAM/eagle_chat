@@ -5,12 +5,15 @@ import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
 import socketService from '../services/socket'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import FriendList from '../components/FriendList'
+import ChatWindow from '../components/ChatWindow'
 
 export default function Chat() {
   const { t } = useTranslation()
   const { user, token, logout } = useAuthStore()
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('chats')
+  const [selectedFriend, setSelectedFriend] = useState(null)
 
   useEffect(() => {
     // 连接Socket.IO
@@ -101,11 +104,7 @@ export default function Chat() {
         {/* 列表区域 */}
         <div className="flex-1 overflow-y-auto">
           {activeTab === 'chats' && (
-            <div className="p-4 text-center text-gray-500">
-              <MessageCircle className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-              <p>{t('chat.empty.chats')}</p>
-              <p className="text-sm mt-1">{t('chat.empty.chatsHint')}</p>
-            </div>
+            <FriendList onSelectFriend={setSelectedFriend} />
           )}
           {activeTab === 'groups' && (
             <div className="p-4 text-center text-gray-500">
@@ -125,30 +124,26 @@ export default function Chat() {
       </div>
 
       {/* 主聊天区域 */}
-      <div className="flex-1 flex flex-col">
-        {/* 欢迎界面 */}
-        <div className="flex-1 flex items-center justify-center bg-gray-50">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-6">
-              <MessageCircle className="w-12 h-12 text-white" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              {t('chat.welcome.title')}
-            </h2>
-            <p className="text-gray-600 mb-6">
-              {t('chat.welcome.subtitle')}
-            </p>
-            <div className="flex justify-center space-x-4">
-              <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                {t('chat.welcome.addFriend')}
-              </button>
-              <button className="px-6 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                {t('chat.welcome.createGroup')}
-              </button>
+      {selectedFriend ? (
+        <ChatWindow friend={selectedFriend} />
+      ) : (
+        <div className="flex-1 flex flex-col">
+          {/* 欢迎界面 */}
+          <div className="flex-1 flex items-center justify-center bg-gray-50">
+            <div className="text-center">
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mb-6">
+                <MessageCircle className="w-12 h-12 text-white" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t('chat.welcome.title')}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                {t('chat.welcome.subtitle')}
+              </p>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

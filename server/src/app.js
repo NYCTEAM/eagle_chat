@@ -21,6 +21,7 @@ const friendRoutes = require('./routes/friends');
 const meetingRoutes = require('./routes/meetings');
 const qrcodeRoutes = require('./routes/qrcode');
 const userRoutes = require('./routes/users');
+const botRoutes = require('./routes/bots');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -94,6 +95,7 @@ app.use('/api/friends', friendRoutes);
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/qrcode', qrcodeRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/bots', botRoutes);
 
 // Serve Web Frontend (if built)
 if (process.env.NODE_ENV === 'production') {
