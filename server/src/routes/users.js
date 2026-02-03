@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { auth } = require('../middleware/auth');
 const User = require('../models/User');
-const upload = require('../middleware/upload');
+const { uploadAvatar } = require('../middleware/upload');
 
 // 获取当前用户信息
 router.get('/me', auth, async (req, res) => {
@@ -68,7 +68,7 @@ router.put('/me', auth, async (req, res) => {
 });
 
 // 上传头像
-router.post('/avatar', auth, upload.single('avatar'), async (req, res) => {
+router.post('/avatar', auth, uploadAvatar, async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No file uploaded' });
