@@ -87,6 +87,21 @@
       "meetings": "会议",
       "contacts": "联系人"
     },
+    "search": {
+      "placeholder": "搜索好友或消息..."
+    },
+    "friends": {
+      "addFriend": "添加好友",
+      "noFriends": "暂无好友",
+      "searchPlaceholder": "搜索用户地址或昵称",
+      "noResults": "未找到用户"
+    },
+    "status": {
+      "online": "在线",
+      "offline": "离线"
+    },
+    "isTyping": "正在输入...",
+    "selectFriend": "选择一个好友开始聊天",
     "welcome": {
       "title": "欢迎使用 Eagle Chat",
       "subtitle": "选择一个聊天开始对话",
@@ -164,6 +179,45 @@
     "accepted": "已接受",
     "declined": "已拒绝"
   },
+  "group": {
+    "title": "群聊",
+    "management": "群组管理",
+    "info": "群信息",
+    "members": "成员",
+    "announcement": "群公告",
+    "invite": "邀请",
+    "createGroup": "创建群聊",
+    "name": "群名称",
+    "description": "群简介",
+    "avatar": "群头像",
+    "changeAvatar": "更换群头像",
+    "creator": "创建者",
+    "createdAt": "创建时间",
+    "admin": "管理员",
+    "addMember": "添加成员",
+    "removeMember": "移除成员",
+    "remove": "移除",
+    "setAdmin": "设为管理员",
+    "mute": "禁言",
+    "muteDuration": "禁言时长（分钟）",
+    "userMuted": "用户已被禁言",
+    "confirmRemoveMember": "确定要移除该成员吗？",
+    "memberRemoved": "成员已移除",
+    "memberAdded": "成员已添加",
+    "adminSet": "管理员已设置",
+    "updateSuccess": "群信息更新成功",
+    "delete": "删除群组",
+    "confirmDelete": "确定要删除该群组吗？此操作不可恢复！",
+    "announcementPlaceholder": "输入群公告内容...",
+    "inviteLink": "邀请链接",
+    "qrCode": "二维码",
+    "generateQRCode": "生成二维码",
+    "linkCopied": "链接已复制",
+    "scanToJoin": "扫描二维码加入群组",
+    "shareTitle": "分享群组",
+    "shareDescription": "通过链接或二维码邀请好友加入群组",
+    "enterMemberAddress": "请输入成员钱包地址"
+  },
   "groups": {
     "title": "群聊",
     "createGroup": "创建群聊",
@@ -195,6 +249,70 @@
     "allowInvite": "允许成员邀请",
     "maxMembers": "最大成员数",
     "pinnedMessages": "置顶消息"
+  },
+  "profile": {
+    "edit": "编辑资料",
+    "nickname": "昵称",
+    "nicknamePlaceholder": "输入您的昵称",
+    "bio": "个性签名",
+    "bioPlaceholder": "介绍一下自己...",
+    "walletAddress": "钱包地址",
+    "avatarUpdated": "头像已更新",
+    "updateSuccess": "资料更新成功",
+    "invalidImageType": "无效的图片格式",
+    "imageTooLarge": "图片大小不能超过 5MB",
+    "useNFTAvatar": "使用 NFT 头像",
+    "nftAvatarComingSoon": "NFT 头像功能即将推出"
+  },
+  "call": {
+    "audioCall": "语音通话",
+    "videoCall": "视频通话",
+    "audio": "语音",
+    "video": "视频",
+    "calling": "呼叫中...",
+    "incomingCall": "来电中...",
+    "connecting": "连接中...",
+    "connected": "已连接",
+    "participants": "参与者",
+    "loadError": "加载通话失败",
+    "mediaError": "无法访问摄像头或麦克风",
+    "startGroupCall": "发起群组通话",
+    "videoCallDescription": "高清视频通话，支持屏幕共享",
+    "audioCallDescription": "清晰语音通话，节省流量",
+    "notice": "注意事项",
+    "noticeItem1": "所有群成员都会收到通话通知",
+    "noticeItem2": "请确保您的网络连接稳定",
+    "noticeItem3": "通话将使用 Jitsi Meet 服务",
+    "creating": "正在创建通话...",
+    "all": "全部",
+    "missed": "未接",
+    "incoming": "呼入",
+    "outgoing": "呼出",
+    "noHistory": "暂无通话记录",
+    "noAnswer": "未接听"
+  },
+  "voice": {
+    "title": "语音消息",
+    "record": "录音",
+    "clickToStart": "点击开始录音",
+    "recording": "录音中...",
+    "paused": "已暂停",
+    "preview": "播放预览",
+    "sendError": "发送语音消息失败",
+    "microphoneError": "无法访问麦克风，请检查权限"
+  },
+  "file": {
+    "upload": "上传文件",
+    "clickToUpload": "点击或拖拽文件到此处上传",
+    "supportedFormats": "支持图片、视频、音频、文档等格式",
+    "maxSize": "最大 {{max}}",
+    "sizeError": "文件大小不能超过 {{max}}",
+    "addMore": "添加更多文件",
+    "uploading": "上传中...",
+    "uploadError": "上传失败"
+  },
+  "emoji": {
+    "title": "表情"
   },
   "meetings": {
     "title": "视频会议",
