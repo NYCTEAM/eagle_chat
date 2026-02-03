@@ -235,7 +235,7 @@ EOF
 
 chmod 600 server/.env
 
-echo -e "${GREEN}[10/12]${NC} 安装依赖..."
+echo -e "${GREEN}[10/14]${NC} 安装后端依赖..."
 cd server
 if [ -f "package.json" ]; then
     npm install --production
@@ -243,7 +243,18 @@ else
     echo -e "${YELLOW}[警告]${NC} package.json不存在，请先从GitHub克隆项目"
 fi
 
-echo -e "${GREEN}[11/12]${NC} 配置PM2..."
+echo -e "${GREEN}[11/14]${NC} 构建Web前端..."
+cd ../web
+if [ -f "package.json" ]; then
+    npm install
+    npm run build
+    echo "Web前端构建完成，输出目录: $INSTALL_DIR/web/dist"
+else
+    echo -e "${YELLOW}[警告]${NC} Web前端package.json不存在"
+fi
+cd ..
+
+echo -e "${GREEN}[12/14]${NC} 配置PM2..."
 cat > ecosystem.config.js << EOF
 module.exports = {
   apps: [{
@@ -273,7 +284,7 @@ pm2 start ecosystem.config.js
 pm2 save
 pm2 startup | tail -n 1 | bash
 
-echo -e "${GREEN}[12/12]${NC} 配置Nginx..."
+echo -e "${GREEN}[13/14]${NC} 配置Nginx..."
 cat > /etc/nginx/sites-available/eagle-chat << EOF
 # Eagle Chat Nginx配置
 
@@ -348,14 +359,12 @@ server {
         access_log off;
     }
     
-    # Web前端 (如果有)
+    # Web前端静态文件
     location / {
-        proxy_pass http://eagle_chat_backend;
-        proxy_http_version 1.1;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
+        root $INSTALL_DIR/web/dist;
+        try_files \$uri \$uri/ /index.html;
+        expires 1h;
+        add_header Cache-Control "public, must-revalidate";
     }
 }
 EOF
@@ -363,6 +372,23 @@ EOF
 # 启用站点
 ln -sf /etc/nginx/sites-available/eagle-chat /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
+
+echo -e "${GREEN}[14/14]${NC} 验证部署..."
+sleep 3
+
+# 检查服务状态
+if pm2 list | grep -q "eagle-chat-server.*online"; then
+    echo -e "${GREEN}✓${NC} 后端服务运行正常"
+else
+    echo -e "${YELLOW}⚠${NC} 后端服务状态异常"
+fi
+
+# 检查Web文件
+if [ -f "$INSTALL_DIR/web/dist/index.html" ]; then
+    echo -e "${GREEN}✓${NC} Web前端构建成功"
+else
+    echo -e "${YELLOW}⚠${NC} Web前端文件未找到"
+fi
 
 echo ""
 echo "=========================================="
