@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore'
 import socketService from '../services/socket'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import FriendList from '../components/FriendList'
+import GroupList from '../components/GroupList'
 import ChatWindow from '../components/ChatWindow'
 import ProfileSettings from '../components/ProfileSettings'
 
@@ -15,6 +16,7 @@ export default function Chat() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('chats')
   const [selectedFriend, setSelectedFriend] = useState(null)
+  const [selectedGroup, setSelectedGroup] = useState(null)
   const [showProfileSettings, setShowProfileSettings] = useState(false)
 
   useEffect(() => {
@@ -33,6 +35,20 @@ export default function Chat() {
     logout()
     navigate('/login')
   }
+
+  const getChatTarget = () => {
+    if (activeTab === 'chats') return selectedFriend;
+    if (activeTab === 'groups') return selectedGroup;
+    return null;
+  };
+
+  const getChatType = () => {
+    if (activeTab === 'chats') return 'direct';
+    if (activeTab === 'groups') return 'group';
+    return 'direct';
+  };
+
+  const chatTarget = getChatTarget();
 
   return (
     <div className="h-screen flex bg-gray-100">
